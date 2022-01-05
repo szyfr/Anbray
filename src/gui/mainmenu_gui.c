@@ -35,9 +35,10 @@ void DrawMainMenu(Gamestate *gamestate) {
                     char *name = calloc(1,count);
                     strcpy(name, directoryList[i+2]);
                     gamestate->mapName = directoryList[i+2];
-                    gamestate->state = STATE_MAP;
                     
                     LoadMapData(gamestate);
+                    
+                    gamestate->state = STATE_MAP;
                 }
                 
                 UnloadFileData((char*)file);

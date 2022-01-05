@@ -25,6 +25,7 @@
 #include "../include/map.h"
 #include "../include/gamestate.h"
 
+#include "player.c"
 #include "map/map_generation.c"
 #include "gui/mainmenu_gui.c"
 
@@ -37,36 +38,12 @@ int main() {
     
     Gamestate *gamestate = (Gamestate*)calloc(1, sizeof(Gamestate));
     
-    gamestate->debug = true;
-    
-    /*
-    gamestate->camera.position = (Vector3){0.0f,-5.0f,-5.0f};
-    gamestate->camera.up       = (Vector3){0.0f,-1.0f,0.0f};
-    gamestate->camera.fovy     = 50.0f;
-*/
-    
-    gamestate->camera.position = (Vector3){0.0f,5.0f,5.0f};
-    gamestate->camera.up       = (Vector3){0.0f,1.0f,0.0f};
-    gamestate->camera.fovy     = 50.0f;
-    
+    InitializePlayer(gamestate);
     
     
     while(!WindowShouldClose()) {
-        if(IsKeyDown(KEY_W)) {
-            gamestate->camera.target.z   += 0.2f;
-            gamestate->camera.position.z += 0.2f;
-        }
-        if(IsKeyDown(KEY_S)) {
-            gamestate->camera.target.z   -= 0.2f;
-            gamestate->camera.position.z -= 0.2f;
-        }
-        if(IsKeyDown(KEY_A)) {
-            gamestate->camera.target.x   -= 0.2f;
-            gamestate->camera.position.x -= 0.2f;
-        }
-        if(IsKeyDown(KEY_D)) {
-            gamestate->camera.target.x   += 0.2f;
-            gamestate->camera.position.x += 0.2f;
+        if(gamestate->state == STATE_MAP) {
+            PlayerControls(gamestate);
         }
         
         // Draw
@@ -76,16 +53,15 @@ int main() {
         // Draw 3D
         BeginMode3D(gamestate->camera);
         
-        if(gamestate->state == STATE_MAP) DrawGrid(100, 1);
-        
-        
-        // TODI: they don't show up?
-        for(int i = 0; i < gamestate->map.numChunks; i++) {
-            DrawModel(gamestate->map.chunks[i].model,
-                      gamestate->map.chunks[i].location,
-                      1.0f, WHITE);
+        if(gamestate->state == STATE_MAP) {
+            
+            // TODO: Wrap map
+            for(int i = 0; i < gamestate->map.numChunks; i++) {
+                DrawModel(gamestate->map.chunks[i].model,
+                          gamestate->map.chunks[i].location,
+                          1.0f, WHITE);
+            }
         }
-        
         
         EndMode3D();
         
@@ -93,17 +69,15 @@ int main() {
         // Draw 2D
         DrawMainMenu(gamestate);
         
-        // TODO: crashes game
-        DrawTexture(gamestate->map.chunks[0].texture,0,0,WHITE);
-        
         
         // Draw Debug
         DrawFPS(0,0);
         char buffer[20] = {0};
-        sprintf(buffer, "%2.f,%2.f,%2.f",
+        sprintf(buffer, "%2.f,%2.f,%2.f\n %2.f",
                 gamestate-> camera.target.x,
                 gamestate->camera.target.y,
-                gamestate->camera.target.z);
+                gamestate->camera.target.z,
+                gamestate->camera.fovy);
         DrawText(buffer, 0, 20, 20, BLACK);
         
         EndDrawing();

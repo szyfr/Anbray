@@ -59,48 +59,73 @@ void LoadMapData(Gamestate *gamestate) {
     u32 chunkTotal = (mapWidth/250) * (mapHeight/250);
     gamestate->map.numChunks = chunkTotal;
     
-    Chunk *chunks = (Chunk*)calloc(chunkTotal, sizeof(Chunk));
+    gamestate->map.chunks = (Chunk*)calloc(chunkTotal, sizeof(Chunk));
     
     for(int i = 0; i < chunkTotal; i++) {
-        chunks[i].location = (Vector3){
-            (float)(i%(mapWidth/250)),
-            0.0f,
-            (float)(i/(mapWidth/250))};
-        
-        // || reliefMap
+        // option->heightmapLOD
+        // TODO: Map LOD
+        //    -0 No detail
+        //    -1 Full detail
+        //    -2 75%
+        //    -3 50%
+        //    -4 25%
+        // If LOD is lower than map, resize image
+        // TODO: 25% LOD has issues lining up the chunks
         if(mapData->heightmapDivider) {
+            // Pre-calc
+            float mapWidthDivided   = mapWidth * mapData->heightmapDivider;
+            float chunkWidthDivided = 250 * mapData->heightmapDivider;
+            
+            // Location
+            gamestate->map.chunks[i].location = (Vector3){
+                (float)(i%(mapWidth/250)),
+                0.0f,
+                (float)(i/(mapWidth/250))};
+            
             // Grab Heightmap
             char heightmapLoc[200] = {0};
             strcpy(heightmapLoc,directory);
-            strcat(heightmapLoc,"/map/height.png");
+            // TODO: Change this to just heightmap.png once LOD settings are done
+            strcat(heightmapLoc,"/map/heightmapLOD3.png");
             Image heightmap = LoadImage(heightmapLoc);
+            int positionX =  (int)(i*chunkWidthDivided) % (int)mapWidthDivided;
+            int positionY = ((int)(i*chunkWidthDivided) / (int)mapWidthDivided) * (int)chunkWidthDivided;
             ImageCrop(&heightmap, (Rectangle){
-                          (int)chunks[i].location.x,
-                          (int)chunks[i].location.z,
-                          250/mapData->heightmapDivider, 250/mapData->heightmapDivider});
+                          positionX,
+                          positionY,
+                          chunkWidthDivided+1, chunkWidthDivided+1});
             
             // Mesh and Model
-            chunks[i].mesh  = GenMeshHeightmap(heightmap, (Vector3){1.0f, 1.0f, 1.0f});
-            chunks[i].model = LoadModelFromMesh(chunks[i].mesh);
-            
-            // Texture
-            Image textureImg = ImageCopy(gamestate->map.provincesImg);
-            ImageCrop(&textureImg, (Rectangle){
-                          (int)chunks[i].location.x,
-                          (int)chunks[i].location.z,
-                          250, 250});
-            chunks[i].texture = LoadTextureFromImage(textureImg);
-            chunks[i].model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = chunks[i].texture;
+            gamestate->map.chunks[i].mesh  = GenMeshHeightmap(heightmap, (Vector3){
+                                                                  1.0f+(1.0f/chunkWidthDivided),
+                                                                  0.2f,
+                                                                  1.0f+(1.0f/chunkWidthDivided)});
+            gamestate->map.chunks[i].model = LoadModelFromMesh(gamestate->map.chunks[i].mesh);
             
             // Unload
             UnloadImage(heightmap);
-            UnloadImage(textureImg);
+        } else {
+            // Location
+            gamestate->map.chunks[i].location = (Vector3){
+                (float)(i%(mapWidth/250))+0.5f,
+                0.0f,
+                (float)(i/(mapWidth/250))+0.5f};
+            // Generate planes
+            gamestate->map.chunks[i].mesh  = GenMeshPlane(1.0f, 1.0f, 1, 1);
+            gamestate->map.chunks[i].model = LoadModelFromMesh(gamestate->map.chunks[i].mesh);
         }
+        // Texture
+        Image textureImg = ImageCopy(gamestate->map.provincesImg);
+        ImageCrop(&textureImg, (Rectangle){
+                      (int)(i*250)%mapWidth,
+                      (int)((i*250)/mapWidth)*250,
+                      250, 250});
+        gamestate->map.chunks[i].texture = LoadTextureFromImage(textureImg);
+        gamestate->map.chunks[i].model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gamestate->map.chunks[i].texture;
         
-        
+        // Unload
+        UnloadImage(textureImg);
     }
-    
-    gamestate->map.chunks = chunks;
     
     UnloadFileData((char*)mapData);
 }

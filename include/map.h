@@ -10,7 +10,7 @@ typedef struct {
     char mapName[32];
     u32 width;
     u32 height;
-    u8  heightmapDivider;
+    float heightmapDivider;
     //  0 - Doesn't even look for Heightmap
     //  1 - Heightmap is equal
 } MapData;
