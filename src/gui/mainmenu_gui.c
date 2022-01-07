@@ -10,7 +10,8 @@
 void DrawMainMenu(Gamestate *gamestate) {
     if(gamestate->state == STATE_MAINMENU) {
         // New game button
-        if(GuiButton((Rectangle){10,200,200,100}, "New Game")) {
+        printf("%p\n",gamestate->coreLocalization[0]);
+        if(GuiButton((Rectangle){10,200,200,100}, gamestate->coreLocalization[0])) {
             if(!gamestate->mmFlags & (1 << 0)) gamestate->mmFlags |=  (1 << 0);
             else                               gamestate->mmFlags &= ~(1 << 0);
         }

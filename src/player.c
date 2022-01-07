@@ -4,9 +4,11 @@
 ///=-------------------=///
 
 
+
+/// Constants
 const float mouseWheelModifier =  1.50f;
 const float fovyMinimum        =  4.00f;
-const float fovyMaximum        = 20.00f;
+const float fovyMaximum        = 80.00f;
 const float startingX          = 13.25f;
 const float startingZ          =  1.50f;
 const float positionYOffset    =  5.00f;
@@ -25,7 +27,9 @@ void InitializePlayer(Gamestate *gamestate) {
     gamestate->camera.up       = (Vector3){0.0f,1.0f,0.0f};
     gamestate->camera.fovy     = 20.0f;
     
+#ifdef DEBUG
     gamestate->debug = debug;
+#endif
 }
 void PlayerControls(Gamestate *gamestate) {
     float movementMod = (0.1f * (gamestate->camera.fovy/20));

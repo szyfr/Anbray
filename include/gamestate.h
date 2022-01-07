@@ -24,4 +24,10 @@ typedef struct {
     Camera3D camera;
     char    *mapName;
     Map      map;
+    
+    // Localization
+    char **coreLocalization;
+    u16 coreLength;
+    char **mapLocalization;
+    u16 mapLength;
 } Gamestate;
