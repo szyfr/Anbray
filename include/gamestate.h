@@ -18,11 +18,19 @@ typedef struct {
     bool  debug;
     
     // Main menu GUI
-    u8 mmFlags;
+    u8    mmFlags;
     
-    // Map data
+    // Options
+    OptionsData *optionsData;
+    u8           omFlags;
+    u32          resolutionActive;
+    bool         fullscreenCheck;
+    u32          languageActive;
+    float        LOD;
+    
+    // Map
+    u16      pmFlags;
     Camera3D camera;
-    char    *mapName;
     Map      map;
     
     // Localization

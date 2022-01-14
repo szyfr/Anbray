@@ -6,27 +6,11 @@
 
 
 /// 
-// TODO: Change MapData to not have the maps height and width.
-//       They are already pulled from the image file itself
 void LoadMapData(Gamestate *gamestate) {
     // Setup base directory location
     char directory[200] = {0};
     strcat(directory,"data/maps/");
-    strcat(directory,gamestate->mapName);
-    
-    // Grab MapData.bin
-    char location[200] = {0};
-    strcpy(location,directory);
-    strcat(location,"/MapData.bin");
-    
-    // Read MapData.bin
-    int read = 0;
-    MapData *mapData = (MapData*)LoadFileData(location,&read);
-    
-    if(!mapData && gamestate->debug) {
-        printf("Failed to load MapData.bin\n");
-        return;
-    }
+    strcat(directory,gamestate->mapLocalization[0]);
     
     // Grab Provinces map
     char provincesLoc[200] = {0};
@@ -39,7 +23,6 @@ void LoadMapData(Gamestate *gamestate) {
     strcpy(terrainLoc,directory);
     strcat(terrainLoc,"/map/terrain.png");
     gamestate->map.terrainImg = LoadImage(terrainLoc);
-    
     
     /// Generate chunks
     u32 mapWidth   = gamestate->map.provincesImg.width;
@@ -55,6 +38,46 @@ void LoadMapData(Gamestate *gamestate) {
         gamestate->mmFlags = 0;
     }
     
+    // Grab Heightmap
+    char heightmapLoc[200] = {0};
+    strcpy(heightmapLoc,directory);
+    strcat(heightmapLoc,"/map/heightmap.png");
+    Image heightmap = LoadImage(heightmapLoc);
+    
+    // Pre-calc
+    float mapWidthDivided   = 0;
+    float mapHeightDivided  = 0;
+    float chunkWidthDivided = 0;
+    
+    switch(gamestate->optionsData->mapLOD) {
+        case 1:
+        mapWidthDivided   = (float)mapWidth  * 0.20f;
+        mapHeightDivided  = (float)mapHeight * 0.20f;
+        chunkWidthDivided = 250.0f           * 0.20f;
+        break;
+        
+        case 2:
+        mapWidthDivided   = (float)mapWidth  * 0.50f;
+        mapHeightDivided  = (float)mapHeight * 0.50f;
+        chunkWidthDivided = 250.0f           * 0.50f;
+        break;
+        
+        case 3:
+        mapWidthDivided   = (float)mapWidth  * 0.80f;
+        mapHeightDivided  = (float)mapHeight * 0.80f;
+        chunkWidthDivided = 250.0f           * 0.80f;
+        break;
+        
+        case 4:
+        mapWidthDivided   = (float)mapWidth;
+        mapHeightDivided  = (float)mapHeight;
+        chunkWidthDivided = 250.0f;
+        break;
+    }
+    
+    // Resizing heightmap
+    ImageResize(&heightmap, mapWidthDivided, mapHeightDivided);
+    
     // Generating chunks
     u32 chunkTotal = (mapWidth/250) * (mapHeight/250);
     gamestate->map.numChunks = chunkTotal;
@@ -62,48 +85,28 @@ void LoadMapData(Gamestate *gamestate) {
     gamestate->map.chunks = (Chunk*)calloc(chunkTotal, sizeof(Chunk));
     
     for(int i = 0; i < chunkTotal; i++) {
-        // option->heightmapLOD
-        // TODO: Map LOD
-        //    -0 No detail
-        //    -1 Full detail
-        //    -2 75%
-        //    -3 50%
-        //    -4 25%
-        // If LOD is lower than map, resize image
-        // TODO: 25% LOD has issues lining up the chunks
-        if(mapData->heightmapDivider) {
-            // Pre-calc
-            float mapWidthDivided   = mapWidth * mapData->heightmapDivider;
-            float chunkWidthDivided = 250 * mapData->heightmapDivider;
-            
+        if(gamestate->optionsData->mapLOD != 0) {
             // Location
             gamestate->map.chunks[i].location = (Vector3){
                 (float)(i%(mapWidth/250)),
                 0.0f,
                 (float)(i/(mapWidth/250))};
             
-            // Grab Heightmap
-            char heightmapLoc[200] = {0};
-            strcpy(heightmapLoc,directory);
-            // TODO: Change this to just heightmap.png once LOD settings are done
-            strcat(heightmapLoc,"/map/heightmapLOD3.png");
-            Image heightmap = LoadImage(heightmapLoc);
+            // Cropping heightmap
             int positionX =  (int)(i*chunkWidthDivided) % (int)mapWidthDivided;
             int positionY = ((int)(i*chunkWidthDivided) / (int)mapWidthDivided) * (int)chunkWidthDivided;
-            ImageCrop(&heightmap, (Rectangle){
+            Image croppedHeightmap = ImageCopy(heightmap);
+            ImageCrop(&croppedHeightmap, (Rectangle){
                           positionX,
                           positionY,
-                          chunkWidthDivided+1, chunkWidthDivided+1});
+                          (int)chunkWidthDivided+1, (int)chunkWidthDivided+1});
             
             // Mesh and Model
-            gamestate->map.chunks[i].mesh  = GenMeshHeightmap(heightmap, (Vector3){
+            gamestate->map.chunks[i].mesh  = GenMeshHeightmap(croppedHeightmap, (Vector3){
                                                                   1.0f+(1.0f/chunkWidthDivided),
                                                                   0.2f,
                                                                   1.0f+(1.0f/chunkWidthDivided)});
             gamestate->map.chunks[i].model = LoadModelFromMesh(gamestate->map.chunks[i].mesh);
-            
-            // Unload
-            UnloadImage(heightmap);
         } else {
             // Location
             gamestate->map.chunks[i].location = (Vector3){
@@ -114,6 +117,7 @@ void LoadMapData(Gamestate *gamestate) {
             gamestate->map.chunks[i].mesh  = GenMeshPlane(1.0f, 1.0f, 1, 1);
             gamestate->map.chunks[i].model = LoadModelFromMesh(gamestate->map.chunks[i].mesh);
         }
+        
         // Texture
         Image textureImg = ImageCopy(gamestate->map.provincesImg);
         ImageCrop(&textureImg, (Rectangle){
@@ -126,6 +130,16 @@ void LoadMapData(Gamestate *gamestate) {
         // Unload
         UnloadImage(textureImg);
     }
-    
-    UnloadFileData((char*)mapData);
+    UnloadImage(heightmap);
+}
+
+void FreeMap(Gamestate *gamestate) {
+    for(int i = 0; i < gamestate->map.numChunks; i++) {
+        UnloadModel(gamestate->map.chunks[i].model);
+        UnloadTexture(gamestate->map.chunks[i].texture);
+    }
+    free(gamestate->map.chunks);
+    gamestate->map.numChunks = 0;
+    UnloadImage(gamestate->map.provincesImg);
+    UnloadImage(gamestate->map.terrainImg);
 }

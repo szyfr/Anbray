@@ -10,10 +10,19 @@
 void DrawMainMenu(Gamestate *gamestate) {
     if(gamestate->state == STATE_MAINMENU) {
         // New game button
-        printf("%p\n",gamestate->coreLocalization[0]);
-        if(GuiButton((Rectangle){10,200,200,100}, gamestate->coreLocalization[0])) {
+        if(GuiButton((Rectangle){10,200,150,75}, gamestate->coreLocalization[0])) {
             if(!gamestate->mmFlags & (1 << 0)) gamestate->mmFlags |=  (1 << 0);
             else                               gamestate->mmFlags &= ~(1 << 0);
+        }
+        // Options button
+        if(GuiButton((Rectangle){10,300,150,75}, gamestate->coreLocalization[1])) {
+            if (gamestate->omFlags & (1 << 0)) gamestate->omFlags &= ~(1 << 0);
+            else                               gamestate->omFlags |=  (1 << 0);
+        }
+        // Quit button
+        if(GuiButton((Rectangle){10,400,150,75}, gamestate->coreLocalization[2])) {
+            EndDrawing();
+            exit(0);
         }
         
         // Map selection list
@@ -22,27 +31,19 @@ void DrawMainMenu(Gamestate *gamestate) {
             char **directoryList = GetDirectoryFiles("data/maps", &count);
             
             for(int i = 0; i < count-2; i++) {
+                // free localization
+                FreeLocalization(gamestate, false);
                 
-                char location[200] = {0};
-                strcat(location,"data/maps/");
-                strcat(location,directoryList[i+2]);
-                strcat(location,"/MapData.bin");
+                // Load Map localization
+                LoadLocalization(gamestate, directoryList[i+2]);
                 
-                int read = 0;
-                MapData *file = (MapData*)LoadFileData(location,&read);
-                
-                if(GuiButton((Rectangle){210,200+(i*20),200,20}, file->mapName)) {
-                    int count = strlen(directoryList[i+2]);
-                    char *name = calloc(1,count);
-                    strcpy(name, directoryList[i+2]);
-                    gamestate->mapName = directoryList[i+2];
+                // Draw button
+                if(GuiButton((Rectangle){410,200+(i*20),200,20}, gamestate->mapLocalization[1])) {
                     
                     LoadMapData(gamestate);
                     
                     gamestate->state = STATE_MAP;
                 }
-                
-                UnloadFileData((char*)file);
             }
             ClearDirectoryFiles();
         }

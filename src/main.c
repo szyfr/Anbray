@@ -26,38 +26,45 @@
 #include "../include/population.h"
 #include "../include/province_modifiers.h"
 #include "../include/province.h"
+#include "../include/options.h"
 #include "../include/gamestate.h"
+
+
+//TODO: include these in a seperate header
+#include "utilities/localization.c"
+#include "utilities/options.c"
+#include "utilities/population_linked_list.c"
+#include "utilities/province_linked_list.c"
+#include "utilities/province_modifier_linked_list.c"
 
 #include "player.c"
 #include "map/map_generation.c"
 #include "map/map_drawing.c"
 #include "gui/mainmenu_gui.c"
-//TODO: include these in a seperate header
-#include "utilities/population_linked_list.c"
-#include "utilities/province_linked_list.c"
-#include "utilities/province_modifier_linked_list.c"
+#include "gui/pausemenu_gui.c"
+#include "gui/optionsmenu_gui.c"
 
-#include "utilities/localization.c"
 
 
 /// Main
 int main() {
     SetTraceLogLevel(LOG_NONE);
-    InitWindow(1080, 720, "Anbray");
+    InitWindow(1280, 720, "Anbray");
     SetTargetFPS(60);
     
     Gamestate *gamestate = (Gamestate*)calloc(1, sizeof(Gamestate));
+    
     InitializePlayer(gamestate);
-    
-    LoadCoreLocalization(gamestate);
-    
-    printf("After Loading: %p\n",gamestate->coreLocalization[0]);
+    InitOptions(gamestate);
+    LoadLocalization(gamestate, 0);
     
     while(!WindowShouldClose()) {
-        printf("In Logic: %p\n",gamestate->coreLocalization[0]);
         // Logic
         if(gamestate->state == STATE_MAP) {
             PlayerControls(gamestate);
+        }
+        if(IsKeyPressed(KEY_O)) {
+            gamestate->pmFlags |=  (1 << 0);
         }
         
         
@@ -65,17 +72,15 @@ int main() {
         BeginDrawing();
         ClearBackground(RAYWHITE);
         
-        printf("In Draw: %p\n",gamestate->coreLocalization[0]);
-        
         // Draw 3D
         BeginMode3D(gamestate->camera);
-        
-        printf("In 3D: %p\n",gamestate->coreLocalization[0]);
         
         if(gamestate->state == STATE_MAP) {
             if(gamestate->debug) DrawGrid(100,1);
             
             DrawMap(gamestate);
+            
+            
         }
         
         EndMode3D();
@@ -83,6 +88,13 @@ int main() {
         
         // Draw 2D
         DrawMainMenu(gamestate);
+        
+        // Draw Pause Menu
+        DrawPauseMenu(gamestate);
+        
+        // Options menu
+        DrawOptionsMenu(gamestate);
+        
         
         
         // Draw Debug
@@ -99,6 +111,9 @@ int main() {
         
         EndDrawing();
     }
+    FreeLocalization(gamestate,true);
+    FreeLocalization(gamestate,false);
+    FreeMap(gamestate);
     
     return 0;
 }
