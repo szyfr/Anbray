@@ -15,7 +15,8 @@ typedef enum {
 /// Structures
 typedef struct {
     State state;
-    bool  debug;
+    char *errorlog;
+    u32   errorlogSize;
     
     // Main menu GUI
     u8    mmFlags;
@@ -27,6 +28,7 @@ typedef struct {
     bool         fullscreenCheck;
     u32          languageActive;
     float        LOD;
+    bool         messageCheck;
     
     // Map
     u16      pmFlags;

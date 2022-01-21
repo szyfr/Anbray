@@ -22,4 +22,6 @@ typedef struct {
     u8   mapLOD;
     
     u8   language;
+    
+    bool messageLogging;
 } OptionsData;

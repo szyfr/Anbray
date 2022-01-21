@@ -5,7 +5,9 @@
 
 
 
-///
+/// Functions
+
+// Grabs the core localization file
 char *GetRawCoreLocalization(Gamestate *gamestate, u32 *rawRead) {
     // Ready variables
     char location[200] = {0};
@@ -36,19 +38,26 @@ char *GetRawCoreLocalization(Gamestate *gamestate, u32 *rawRead) {
     
     // Check for file
     if(!FileExists(location)) {
-        if(gamestate->debug) printf("File (%s) does not exist\n",location);
+        char str[55] = {0};
+        sprintf(str, "(F): File (%s) does not exist\n",location);
+        DB_Errorlog(gamestate, str);
         
         // Grabs english by default
         memset(location, 0, 200);
         strcat(location,"data/localization/english.bin");
+        
+        if(!FileExists(location)) {
+            DB_Errorlog(gamestate, "(F): Could not find English localization\n");
+            DB_CrashError(gamestate);
+        }
     }
     
     // Grab data
     return LoadFileData(location, rawRead);
 }
 
-///
-char *GetRawMapLocalization(Gamestate *gamestate, char *mapname,  u32 *rawRead) {
+// Grabs the map localization file
+char *GetRawMapLocalization(Gamestate *gamestate, char *mapname, u32 *rawRead) {
     // Ready variables
     char location[200] = {0};
     strcat(location,"data/maps/");
@@ -80,30 +89,59 @@ char *GetRawMapLocalization(Gamestate *gamestate, char *mapname,  u32 *rawRead) 
     
     // Check for file
     if(!FileExists(location)) {
-        if(gamestate->debug) printf("File (%s) does not exist\n",location);
+        char str[55] = {0};
+        sprintf(str, "(F): File (%s) does not exist\n",location);
+        DB_Errorlog(gamestate, str);
         
         // Grabs english by default
         memset(location, 0, 200);
         strcat(location,"data/maps/");
         strcat(location,mapname);
         strcat(location,"/localization/english.bin");
+        
+        if(!FileExists(location)) {
+            DB_Errorlog(gamestate, "(F): Could not find English localization\n");
+            DB_CrashError(gamestate);
+        }
     }
     
     // Grab data
     return LoadFileData(location, rawRead);
 }
 
-///
+// Grabs the map name from its localization file
+char *GrabMapName(char *file) {
+    // Changes first newline to a null-character
+    char *first = strchr(file,'\n');
+    *first = '\0';
+    
+    // Changes second newline to a null-character
+    char *second = strchr(first+1,'\n');
+    *second = '\0';
+    
+    // Creates new memory space for string asnd copies first entry into it
+    char *str = calloc(strlen(first+1)+1, sizeof(char));
+    strcpy(str, first+1);
+    
+    // Changes null-characters back into a newline and frees the memory
+    *first = '\n';
+    *second = '\n';
+    UnloadFileData(file);
+    
+    return str;
+}
+
+// Loads the localization strings from file
 void LoadLocalization(Gamestate *gamestate, char *mapname) {
     // ErrorCheck
     if(!mapname) {
         if(gamestate->coreLocalization != 0) {
-            printf("Tried to re-load core localization.");
+            DB_Errorlog(gamestate, "(F): Attempted loading core localization while already loaded\n");
             return;
         }
     } else {
         if(gamestate->mapLocalization != 0) {
-            printf("Tried to re-load map localization.");
+            DB_Errorlog(gamestate, "(F): Attempted loading map localization while already loaded\n");
             return;
         }
     }
@@ -117,8 +155,6 @@ void LoadLocalization(Gamestate *gamestate, char *mapname) {
     
     
     // Get the total count of members
-    gamestate->coreLength = 0;
-    gamestate->mapLength  = 0;
     for(int i = 0; i < rawRead; i++) {
         if(rawFileData[i] == 0x0A) {
             if(!mapname) gamestate->coreLength++;
@@ -145,13 +181,37 @@ void LoadLocalization(Gamestate *gamestate, char *mapname) {
     }
     
     // Free
-    if(!mapname) gamestate->coreLocalization = localArr;
-    else         gamestate->mapLocalization  = localArr;
+    if(!mapname) {
+        gamestate->coreLocalization = localArr;
+        
+        if(localArr != 0) DB_Errorlog(gamestate, "(S): Initialized core localization.\n");
+        else              DB_Errorlog(gamestate, "(F): Initialized core localization.\n");
+    } else {
+        gamestate->mapLocalization  = localArr;
+        
+        if(localArr != 0) DB_Errorlog(gamestate, "(S): Initialized map localization.\n");
+        else              DB_Errorlog(gamestate, "(F): Initialized map localization.\n");
+    }
     UnloadFileData(rawFileData);
 }
 
-//
+// Frees the localization
 void FreeLocalization(Gamestate *gamestate, bool core) {
+    printf("Enters FreeLocalization()\n");
+    if(core) {
+        if(gamestate->coreLocalization == 0) {
+            DB_Errorlog(gamestate, "(S): No core localization to free.\n");
+            return;
+        }
+    } else {
+        if(gamestate->coreLocalization == 0) {
+            DB_Errorlog(gamestate, "(S): No map localization to free.\n");
+            return;
+        }
+    }
+    printf("Passes check\n");
+    printf("%p\n",gamestate->coreLocalization[0]);
+    
     // Ready variables
     u16 length;
     char **array;
@@ -162,19 +222,25 @@ void FreeLocalization(Gamestate *gamestate, bool core) {
         length = gamestate->mapLength;
         array  = gamestate->mapLocalization;
     } 
+    printf("Readied Variables\n");
     
     // Free each string
     for(int i = 0; i < length; i++) {
-        //printf("Freeing (%p): %s\n",array[i],array[i]);
+        printf("Freeing string %p\n",array[i]);
         free(array[i]);
+        printf("Freed string #%i\n",i);
     }
+    printf("Freed each string\n");
     
     // Free array
     if(core) {
         free(gamestate->coreLocalization);
         gamestate->coreLocalization = 0;
+        DB_Errorlog(gamestate, "(S): Freed core localization\n");
     } else {
         free(gamestate->mapLocalization);
         gamestate->mapLocalization = 0;
+        DB_Errorlog(gamestate, "(S): Freed map localization\n");
     }
+    printf("Freed Array\n");
 }

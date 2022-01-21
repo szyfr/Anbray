@@ -30,12 +30,15 @@
 #include "../include/gamestate.h"
 
 
+#include "utilities/debug.c"
+
 //TODO: include these in a seperate header
 #include "utilities/localization.c"
 #include "utilities/options.c"
 #include "utilities/population_linked_list.c"
 #include "utilities/province_linked_list.c"
 #include "utilities/province_modifier_linked_list.c"
+#include "utilities/exitgame.c"
 
 #include "player.c"
 #include "map/map_generation.c"
@@ -51,11 +54,14 @@ int main() {
     SetTraceLogLevel(LOG_NONE);
     InitWindow(1280, 720, "Anbray");
     SetTargetFPS(60);
+    SetExitKey(KEY_END);
     
     Gamestate *gamestate = (Gamestate*)calloc(1, sizeof(Gamestate));
     
-    InitializePlayer(gamestate);
     InitOptions(gamestate);
+    DB_InitializeErrorlog(gamestate);
+    
+    InitializePlayer(gamestate);
     LoadLocalization(gamestate, 0);
     
     while(!WindowShouldClose()) {
@@ -63,8 +69,9 @@ int main() {
         if(gamestate->state == STATE_MAP) {
             PlayerControls(gamestate);
         }
-        if(IsKeyPressed(KEY_O)) {
-            gamestate->pmFlags |=  (1 << 0);
+        if(IsKeyPressed(KEY_ESCAPE)) {
+            if(gamestate->pmFlags & (1 << 0)) gamestate->pmFlags &= ~(1 << 0);
+            else                              gamestate->pmFlags |=  (1 << 0);
         }
         
         
@@ -76,7 +83,7 @@ int main() {
         BeginMode3D(gamestate->camera);
         
         if(gamestate->state == STATE_MAP) {
-            if(gamestate->debug) DrawGrid(100,1);
+            if(gamestate->optionsData->messageLogging) DrawGrid(100,1);
             
             DrawMap(gamestate);
             
@@ -98,10 +105,10 @@ int main() {
         
         
         // Draw Debug
-        if(gamestate->debug) {
+        if(gamestate->optionsData->messageLogging) {
             DrawFPS(0,0);
             char buffer[20] = {0};
-            sprintf(buffer, "%2.f,%2.f,%2.f\n %2.f",
+            sprintf(buffer, "%2.f,%2.f,%2.f\n %2.f\n",
                     gamestate-> camera.target.x,
                     gamestate->camera.target.y,
                     gamestate->camera.target.z,
@@ -111,9 +118,8 @@ int main() {
         
         EndDrawing();
     }
-    FreeLocalization(gamestate,true);
-    FreeLocalization(gamestate,false);
-    FreeMap(gamestate);
+    
+    QuitGame(gamestate);
     
     return 0;
 }

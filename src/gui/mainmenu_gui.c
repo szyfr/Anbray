@@ -5,8 +5,9 @@
 
 
 
-/// DrawMainMenu(gamestate);
-//   Draws the gui elements of the main menu and tracks the flags
+/// Functions
+
+// Draws the gui elements of the main menu and tracks the flags
 void DrawMainMenu(Gamestate *gamestate) {
     if(gamestate->state == STATE_MAINMENU) {
         // New game button
@@ -20,10 +21,7 @@ void DrawMainMenu(Gamestate *gamestate) {
             else                               gamestate->omFlags |=  (1 << 0);
         }
         // Quit button
-        if(GuiButton((Rectangle){10,400,150,75}, gamestate->coreLocalization[2])) {
-            EndDrawing();
-            exit(0);
-        }
+        if(GuiButton((Rectangle){10,400,150,75}, gamestate->coreLocalization[2])) QuitGame(gamestate);
         
         // Map selection list
         if(gamestate->mmFlags & (1 << 0)) {
@@ -31,19 +29,18 @@ void DrawMainMenu(Gamestate *gamestate) {
             char **directoryList = GetDirectoryFiles("data/maps", &count);
             
             for(int i = 0; i < count-2; i++) {
-                // free localization
-                FreeLocalization(gamestate, false);
+                int read = 0;
+                char *localName = GrabMapName(GetRawMapLocalization(gamestate, directoryList[i+2], &read));
                 
-                // Load Map localization
-                LoadLocalization(gamestate, directoryList[i+2]);
-                
-                // Draw button
-                if(GuiButton((Rectangle){410,200+(i*20),200,20}, gamestate->mapLocalization[1])) {
-                    
-                    LoadMapData(gamestate);
-                    
-                    gamestate->state = STATE_MAP;
+                if(GuiButton((Rectangle){410,200+(i*20),200,20}, localName)) {
+                    if(!gamestate->omFlags & (1 << 0)) {
+                        free(localName);
+                        LoadLocalization(gamestate, directoryList[i+2]);
+                        LoadMapData(gamestate);
+                        gamestate->state = STATE_MAP;
+                    }
                 }
+                free(localName);
             }
             ClearDirectoryFiles();
         }

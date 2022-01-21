@@ -10,6 +10,14 @@ const float maximumDistance = 3.25f;
 
 /// Functions
 void DrawSingleChunk(Gamestate *gamestate, u32 chunk, float xOffset) {
+    if(gamestate->map.chunks == 0) {
+        char str[50] = {0};
+        sprintf(str, "Attempted to load chunk[%i], but map is empty\n", chunk);
+        
+        DB_Errorlog(gamestate, str);
+        DB_CrashError(gamestate);
+    }
+    
     DrawModel(gamestate->map.chunks[chunk].model,
               (Vector3){
                   gamestate->map.chunks[chunk].location.x + xOffset, gamestate->map.chunks[chunk].location.y, gamestate->map.chunks[chunk].location.z},

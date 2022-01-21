@@ -40,6 +40,10 @@ void DrawOptionsMenu(Gamestate *gamestate) {
             else                               gamestate->omFlags |=  (1 << 1);
         }
         
+        // Message log Toggle
+        gamestate->messageCheck = GuiCheckBox((Rectangle){left+310, bottom-45, 25, 25}, gamestate->coreLocalization[12], gamestate->messageCheck);
+        
+        // Apply button
         if(GuiButton((Rectangle){left+100, bottom-90, 200, 25}, gamestate->coreLocalization[7])) {
             switch(gamestate->resolutionActive) {
                 case 0: //720p
@@ -78,6 +82,8 @@ void DrawOptionsMenu(Gamestate *gamestate) {
             gamestate->optionsData->mapLOD = (int)gamestate->LOD;
             
             gamestate->optionsData->language = gamestate->languageActive;
+            
+            gamestate->optionsData->messageLogging = gamestate->messageCheck;
             
             CommitOptionsData(gamestate);
         }
