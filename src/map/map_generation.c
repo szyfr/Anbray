@@ -189,6 +189,7 @@ void FreeMap(Gamestate *gamestate) {
     
     // Free chunks
     free(gamestate->map.chunks);
+    gamestate->map.chunks = 0;
     gamestate->map.numChunks = 0;
     
     // Free images

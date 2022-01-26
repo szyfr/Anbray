@@ -5,11 +5,12 @@
 
 
 
-///
+/// Structures
 typedef struct {
     u32 population;
     u8  race;
     u8  culture;
+    u8  religion;
     
     void *next;
 } PopulationMember;

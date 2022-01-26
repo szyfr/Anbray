@@ -7,7 +7,7 @@
 
 ///
 // TODO: Fill out Linked list functions
-ProvinceModifierList CreateProvinceModifierList();
+ProvinceModifierList *CreateProvinceModifierList();
 void AddToProvinceModifierList(ProvinceModifierList *provModList, ProvinceModifierMember *mem);
 void RemoveFromProvinceModifierList(ProvinceModifierList *provModList, ProvinceModifierMember *mem);
 void DeleteProvinceModifierList(ProvinceModifierList *provModList);

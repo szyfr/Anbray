@@ -34,7 +34,6 @@ void DrawMainMenu(Gamestate *gamestate) {
                 
                 if(GuiButton((Rectangle){410,200+(i*20),200,20}, localName)) {
                     if(!gamestate->omFlags & (1 << 0)) {
-                        free(localName);
                         LoadLocalization(gamestate, directoryList[i+2]);
                         LoadMapData(gamestate);
                         gamestate->state = STATE_MAP;

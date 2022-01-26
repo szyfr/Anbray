@@ -35,7 +35,7 @@ void DB_Errorlog(Gamestate *gamestate, char *message) {
 }
 
 // Initialize message log
-void DB_InitializeErrorlog(Gamestate *gamestate) {\
+void DB_InitializeErrorlog(Gamestate *gamestate) {
     gamestate->errorlogSize = 1000;
     gamestate->errorlog = (char*)calloc(gamestate->errorlogSize, sizeof(char));
 }

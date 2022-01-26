@@ -197,7 +197,6 @@ void LoadLocalization(Gamestate *gamestate, char *mapname) {
 
 // Frees the localization
 void FreeLocalization(Gamestate *gamestate, bool core) {
-    printf("Enters FreeLocalization()\n");
     if(core) {
         if(gamestate->coreLocalization == 0) {
             DB_Errorlog(gamestate, "(S): No core localization to free.\n");
@@ -209,8 +208,6 @@ void FreeLocalization(Gamestate *gamestate, bool core) {
             return;
         }
     }
-    printf("Passes check\n");
-    printf("%p\n",gamestate->coreLocalization[0]);
     
     // Ready variables
     u16 length;
@@ -222,15 +219,11 @@ void FreeLocalization(Gamestate *gamestate, bool core) {
         length = gamestate->mapLength;
         array  = gamestate->mapLocalization;
     } 
-    printf("Readied Variables\n");
     
     // Free each string
     for(int i = 0; i < length; i++) {
-        printf("Freeing string %p\n",array[i]);
         free(array[i]);
-        printf("Freed string #%i\n",i);
     }
-    printf("Freed each string\n");
     
     // Free array
     if(core) {
@@ -242,5 +235,4 @@ void FreeLocalization(Gamestate *gamestate, bool core) {
         gamestate->mapLocalization = 0;
         DB_Errorlog(gamestate, "(S): Freed map localization\n");
     }
-    printf("Freed Array\n");
 }

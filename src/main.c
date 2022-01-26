@@ -5,8 +5,6 @@
 
 
 
-#define DEBUG
-
 /// Includes <System>
 #define RAYGUI_IMPLEMENTATION
 
@@ -21,32 +19,9 @@
 
 
 /// Includes <Game>
-#include "../include/generic_defines.h"
-#include "../include/map.h"
-#include "../include/population.h"
-#include "../include/province_modifiers.h"
-#include "../include/province.h"
-#include "../include/options.h"
-#include "../include/gamestate.h"
-
-
-#include "utilities/debug.c"
-
-//TODO: include these in a seperate header
-#include "utilities/localization.c"
-#include "utilities/options.c"
-#include "utilities/population_linked_list.c"
-#include "utilities/province_linked_list.c"
-#include "utilities/province_modifier_linked_list.c"
-#include "utilities/exitgame.c"
-
-#include "player.c"
-#include "map/map_generation.c"
-#include "map/map_drawing.c"
-#include "gui/mainmenu_gui.c"
-#include "gui/pausemenu_gui.c"
-#include "gui/optionsmenu_gui.c"
-
+#include "../include/structures.h"
+#include "../include/prototypes.h"
+#include "../include/includes.h"
 
 
 /// Main
@@ -63,6 +38,28 @@ int main() {
     
     InitializePlayer(gamestate);
     LoadLocalization(gamestate, 0);
+    
+    
+    // TESTING
+    PopulationList *list = CreatePopulationList();
+    
+    PopulationMember *newMember1 = (PopulationMember*)calloc(1,sizeof(PopulationMember));
+    newMember1->population       = 100;
+    newMember1->race             = 1;
+    newMember1->culture          = 0;
+    newMember1->religion         = 0;
+    
+    AddToPopulationList(list, newMember1);
+    AddNewToPopulationList(list, 500, 1, 0, 0);
+    
+    PopulationMember *temp = list->first;
+    for(int i = 0; i < list->count; i++) {
+        if(temp != 0) printf("\n| Pop: %i\n| Race: %i\n| Culture: %i\n| Religion: %i\n| Next: %p\n\n", temp->population, temp->race, temp->culture, temp->religion, temp->next);
+        temp = temp->next;
+    }
+    
+    DeletePopulationList(list);
+    
     
     while(!WindowShouldClose()) {
         // Logic
@@ -113,6 +110,10 @@ int main() {
                     gamestate->camera.target.y,
                     gamestate->camera.target.z,
                     gamestate->camera.fovy);
+            if(gamestate->state == STATE_MAP) {
+                sprintf(buffer, "%s\n",
+                        gamestate->mapLocalization[0]);
+            }
             DrawText(buffer, 0, 20, 20, BLACK);
         }
         

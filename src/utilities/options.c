@@ -4,13 +4,8 @@
 ///=-------------------=///
 
 
-/// Prototypes
-// TODO: figure out if i can do this in a better way
-void FreeMap(Gamestate *gamestate);
-void LoadMapData(Gamestate *gamestate);
 
 /// Functions
-
 // Save the options and apply them
 void CommitOptionsData(Gamestate *gamestate) {
     // Set fullscreen
@@ -30,6 +25,7 @@ void CommitOptionsData(Gamestate *gamestate) {
         LoadLocalization(gamestate, 0);
     }
     if(gamestate->mapLocalization != 0) {
+        printf("Commit: %p\n",gamestate->mapLocalization[0]);
         char *str = (char*)calloc(strlen(gamestate->mapLocalization[0])+1,sizeof(char));
         strcpy(str,gamestate->mapLocalization[0]);
         
@@ -67,19 +63,40 @@ void InitOptions(Gamestate *gamestate) {
         }
         if(gamestate->optionsData->mapLOD  > 4) gamestate->optionsData->mapLOD    =       0;
         if(gamestate->optionsData->language > 4) gamestate->optionsData->language = english;
-        
-        CommitOptionsData(gamestate);
-        return;
+    } else {
+        // Generate new file
+        gamestate->optionsData = (OptionsData*)calloc(1,sizeof(OptionsData));
+        gamestate->optionsData->resolutionWidth  =    1280;
+        gamestate->optionsData->resolutionHeight =     720;
+        gamestate->optionsData->fullscreen       =   false;
+        gamestate->optionsData->mapLOD           =       3;
+        gamestate->optionsData->language         = english;
+        gamestate->optionsData->messageLogging   =    true;
     }
     
-    // Generate new file
-    gamestate->optionsData = (OptionsData*)calloc(1,sizeof(OptionsData));
-    gamestate->optionsData->resolutionWidth  =    1280;
-    gamestate->optionsData->resolutionHeight =     720;
-    gamestate->optionsData->fullscreen       =   false;
-    gamestate->optionsData->mapLOD           =       3;
-    gamestate->optionsData->language         = english;
-    gamestate->optionsData->messageLogging   =    true;
+    switch(gamestate->optionsData->resolutionWidth) {
+        default:
+        case 1280:
+        gamestate->resolutionActive = 0;
+        break;
+        case 1920:
+        gamestate->resolutionActive = 1;
+        break;
+        case 2560:
+        if(gamestate->optionsData->resolutionHeight == 1080) gamestate->resolutionActive = 2;
+        else                                                 gamestate->resolutionActive = 3;
+        break;
+        case 3840:
+        gamestate->resolutionActive = 4;
+        break;
+        case 7680:
+        gamestate->resolutionActive = 5;
+        break;
+    }
+    gamestate->fullscreenCheck = gamestate->optionsData->fullscreen;
+    gamestate->languageActive  = gamestate->optionsData->language;
+    gamestate->LOD             = gamestate->optionsData->mapLOD;
+    gamestate->messageCheck    = gamestate->optionsData->messageLogging;
     
     // Commit file and save
     CommitOptionsData(gamestate);

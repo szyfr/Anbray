@@ -5,7 +5,7 @@
 
 
 
-///
+/// Functions
 void DrawPauseMenu(Gamestate *gamestate) {
     if (gamestate->pmFlags & (1 << 0) && gamestate->state == STATE_MAP) {
         u32 top    = (gamestate->optionsData->resolutionHeight/2)-180;

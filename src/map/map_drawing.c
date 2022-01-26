@@ -6,7 +6,7 @@
 
 
 /// Constants
-const float maximumDistance = 3.25f;
+const float maximumDistance = 4.0f;
 
 /// Functions
 void DrawSingleChunk(Gamestate *gamestate, u32 chunk, float xOffset) {
