@@ -14,6 +14,7 @@
 /// Structs
 typedef struct {
     u16 localID;
+    // TODO: Define as enums
     u8  terrain;
     u8  type;
     

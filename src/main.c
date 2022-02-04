@@ -21,6 +21,7 @@
 /// Includes <Game>
 #include "../include/structures.h"
 #include "../include/prototypes.h"
+//#include "../include/globals.h"
 #include "../include/includes.h"
 
 
@@ -40,25 +41,37 @@ int main() {
     LoadLocalization(gamestate, 0);
     
     
+    //*
     // TESTING
     PopulationList *list = CreatePopulationList();
     
-    PopulationMember *newMember1 = (PopulationMember*)calloc(1,sizeof(PopulationMember));
-    newMember1->population       = 100;
-    newMember1->race             = 1;
-    newMember1->culture          = 0;
-    newMember1->religion         = 0;
+    PopulationMember *mem = CreatePopulationMember();
+    mem->population = 1000;
+    mem->race       = 0;
+    mem->culture    = 0;
+    mem->religion   = 0;
+    AddToPopulationList(list, mem);
     
-    AddToPopulationList(list, newMember1);
-    AddNewToPopulationList(list, 500, 1, 0, 0);
+    mem = CreatePopulationMember();
+    mem->population = 200;
+    mem->race       = 0;
+    mem->culture    = 0;
+    mem->religion   = 0;
+    AddToPopulationList(list, mem);
     
-    PopulationMember *temp = list->first;
-    for(int i = 0; i < list->count; i++) {
-        if(temp != 0) printf("\n| Pop: %i\n| Race: %i\n| Culture: %i\n| Religion: %i\n| Next: %p\n\n", temp->population, temp->race, temp->culture, temp->religion, temp->next);
-        temp = temp->next;
-    }
+    mem = CreatePopulationMember();
+    mem->population = 1200;
+    mem->race       = 0;
+    mem->culture    = 1;
+    mem->religion   = 0;
+    AddToPopulationList(list, mem);
+    
+    ReadPopulationMembers(gamestate, list);
     
     DeletePopulationList(list);
+    list = 0;
+    ReadPopulationMembers(gamestate, list);
+    //*/
     
     
     while(!WindowShouldClose()) {

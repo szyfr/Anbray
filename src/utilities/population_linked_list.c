@@ -5,66 +5,156 @@
 
 
 
-/// Functions
-// Create list
-PopulationList *CreatePopulationList() {
-    PopulationList *list = (PopulationList*)calloc(1, sizeof(PopulationList));
-    return list;
+/// Member Functions
+
+//  Create population member
+//     Uses:
+//   - NONE
+PopulationMember *CreatePopulationMember(void) {
+    return (PopulationMember*)calloc(1, sizeof(PopulationMember));
 }
 
-// Add member to list
-void AddToPopulationList(PopulationList *popList, PopulationMember *mem) {
-    // Find last member
-    PopulationMember *member = popList->first;
-    while(member != 0) member = (PopulationMember*)member->next;
-    
-    // If there are no members
-    if(member == 0) popList->first = (void*)mem;
-    else            member->next   = (void*)mem;
-    
-    popList->count++;
-}
-
-// Add new member to list
-void AddNewToPopulationList(PopulationList *popList,
-                            u32 number,
-                            u8 race,
-                            u8 culture,
-                            u8 religion) {
-    // Allocate space for new member
-    PopulationMember *member = (PopulationMember*)calloc(1, sizeof(PopulationMember));
-    
-    // Set data
-    member->population = number;
-    member->race       = race;
-    member->culture    = culture;
-    member->religion   = religion;
-    
-    // Add to list
-    AddToPopulationList(popList, member);
-}
-
-//
-void RemoveFromPopulationList(PopulationList *popList, PopulationMember *mem);
-
-// Delete list and it's members
-void DeletePopulationList(PopulationList *popList) {
-    // Check if list has ANY members
-    if(popList->first == 0) {
-        free(popList);
-        popList = 0;
+//  Print population info
+//     Uses:
+//   - NONE
+// NOTE: gamestate
+void ReadPopulationMembers(Gamestate *gamestate, PopulationList *list) {
+    // Test list
+    if(list == 0) {
+        DB_Errorlog(gamestate, "(F): Attempted to print from an null pointer.\n");
+        return;
+    }
+    if(list->first == 0) {
+        DB_Errorlog(gamestate, "(F): Attempted to print from an empty population list.\n");
         return;
     }
     
-    // Itterate through list and free each previous
-    PopulationMember *current = popList->first;
-    for(int i = 0; i < popList->count; i++) {
-        PopulationMember *temp = current;
-        current = current->next;
-        free(temp);
+    // Initialize buffer
+    char buffer[100] = {0};
+    
+    // Iterate through each member and print info
+    sprintf(buffer, "\n---\nTotal count: %i\n---\n", list->count);
+    DB_Errorlog(gamestate, buffer);
+    
+    
+    PopulationMember *mem = list->first;
+    for(int i = 0; i < list->count; i++) {
+        sprintf(buffer, "MEMBER: %i:%p\nPopulation:\t%i\nRace:\t\t%i\nCulture:\t%i\nReligion:\t%i\n",
+                i, mem, mem->population, mem->race, mem->culture, mem->religion);
+        // TODO: Change to show words instead of numbers
+        mem = mem->next;
+        
+        DB_Errorlog(gamestate, buffer);
+    }
+    DB_Errorlog(gamestate, "---\n\n");
+}
+
+
+/// List Functions
+
+//  Creates population list
+//     Uses:
+//   - NONE
+PopulationList *CreatePopulationList(void) {
+    return (PopulationList*)calloc(1, sizeof(PopulationList));
+}
+
+//  Adds to population list
+//     Uses:
+//   - NONE
+bool AddToPopulationList(PopulationList *provList, PopulationMember *mem) {
+    // Input testing
+    if(provList == 0 || mem == 0) return false;
+    
+    // Check if list is empty
+    if(provList->first == 0) {
+        provList->first = mem;
+        provList->count++;
+        return true;
     }
     
-    free(popList);
-    popList = 0;
+    // Iterate through members
+    PopulationMember *currentMember = provList->first;
+    for(int i = 0; i < provList->count; i++) {
+        if(currentMember->race     == mem->race    &&
+           currentMember->culture  == mem->culture &&
+           currentMember->religion == mem->religion) {
+            currentMember->population += mem->population;
+            return true;
+        }
+        if(currentMember->next != 0) currentMember = currentMember->next;
+    }
+    // Append onto end
+    currentMember->next = mem;
+    provList->count++;
+    
+    return true;
 }
-void SwitchPopulationList(PopulationList *destPopList, PopulationList *srcPopList, PopulationMember *mem);
+
+//  Remove from population list
+//     Uses:
+//   - NONE
+bool RemoveFromPopulationList(PopulationList *list, PopulationMember *mem) {
+    // Input testing
+    if(list == 0 || mem == 0) return false;
+    if(list->first == 0)      return false;
+    
+    PopulationMember *last = 0;
+    PopulationMember *current = list->first;
+    for(int i = 0; i < list->count; i++) {
+        if(current == mem) {
+            // If it's the first member of the list
+            if(last == 0) {
+                // If it's the only member
+                if(current->next == 0) {
+                    free(current);
+                    list->first = 0;
+                    list->count--;
+                    return true;
+                }
+                
+                // If it's not the only member
+                list->first = current->next;
+                free(current);
+                list->count--;
+                return true;
+            }
+            
+            // If it's not the first
+            // And it's last
+            if(current->next == 0) {
+                free(current);
+                last->next = 0;
+                list->count--;
+                return true;
+            }
+            
+            // if it's not last
+            last->next = current->next;
+            free(current);
+            list->count--;
+            return true;
+        }
+        last    = current;
+        current = current->next;
+    }
+    
+    return false;
+}
+
+//  Delete population list
+//     Uses:
+//   - NONE
+bool DeletePopulationList(PopulationList *list) {
+    // Input testing
+    if(list == 0) return false;
+    
+    // Remove each member
+    while(list->first != 0) {
+        RemoveFromPopulationList(list, list->first);
+    }
+    
+    free(list);
+    
+    return true;
+}
