@@ -8,11 +8,14 @@
 /// Functions
 
 // Generates the map
-void LoadMapData(Gamestate *gamestate) {
+//     Uses:
+//   - Map
+//   - Options
+void LoadMapData(void) {
     // Setup base directory location
     char directory[200] = {0};
     strcat(directory,"data/maps/");
-    strcat(directory,gamestate->mapLocalization[0]);
+    strcat(directory,localization->mapLocalization[0]);
     
     // Grab Provinces map
     char provincesLoc[200] = {0};
@@ -21,43 +24,38 @@ void LoadMapData(Gamestate *gamestate) {
     if(!FileExists(provincesLoc)) {
         char str[100] = {0};
         sprintf(str, "(F): Province map does not exist at (%s)\n", provincesLoc);
-        DB_Errorlog(gamestate, str);
-        DB_CrashError(gamestate);
+        DB_CrashError(str);
     } else {
         char str[100] = {0};
         sprintf(str, "(S): Province map loaded from (%s)\n", provincesLoc);
-        DB_Errorlog(gamestate, str);
+        DB_Errorlog(str);
     }
-    gamestate->map.provincesImg = LoadImage(provincesLoc);
+    map->provincesImg = LoadImage(provincesLoc);
     
     // Grab Terrain map
     char terrainLoc[200] = {0};
-    strcpy(terrainLoc,directory);
-    strcat(terrainLoc,"/map/terrain.png");
+    strcpy(terrainLoc, directory);
+    strcat(terrainLoc, "/map/terrain.png");
     if(!FileExists(terrainLoc)) {
         char str[100] = {0};
         sprintf(str, "(F): Terrain map does not exist at (%s)\n", terrainLoc);
-        DB_Errorlog(gamestate, str);
-        DB_CrashError(gamestate);
+        DB_CrashError(str);
     } else {
         char str[100] = {0};
         sprintf(str, "(S): Terrain map loaded from (%s)\n", terrainLoc);
-        DB_Errorlog(gamestate, str);
+        DB_Errorlog(str);
     }
-    gamestate->map.terrainImg = LoadImage(terrainLoc);
+    map->terrainImg = LoadImage(terrainLoc);
     
     /// Generate chunks
-    u32 mapWidth   = gamestate->map.provincesImg.width;
-    u32 mapHeight  = gamestate->map.provincesImg.height;
+    u32 mapWidth   = map->provincesImg.width;
+    u32 mapHeight  = map->provincesImg.height;
     
     // Testing map size
     bool sizeTest = true;
     if(mapWidth%250)  sizeTest = false;
     if(mapHeight%250) sizeTest = false;
-    if(!sizeTest) {
-        DB_Errorlog(gamestate, "(F): Province map is incorrect size\n");
-        DB_CrashError(gamestate);
-    }
+    if(!sizeTest) DB_CrashError("(F): Province map is incorrect size\n");
     
     // Grab Heightmap
     char heightmapLoc[200] = {0};
@@ -66,12 +64,11 @@ void LoadMapData(Gamestate *gamestate) {
     if(!FileExists(heightmapLoc)) {
         char str[100] = {0};
         sprintf(str, "(F): Height map does not exist at (%s)\n", heightmapLoc);
-        DB_Errorlog(gamestate, str);
-        DB_CrashError(gamestate);
+        DB_CrashError(str);
     } else {
         char str[100] = {0};
         sprintf(str, "(S): Height map loaded from (%s)\n", heightmapLoc);
-        DB_Errorlog(gamestate, str);
+        DB_Errorlog(str);
     }
     Image heightmap = LoadImage(heightmapLoc);
     
@@ -80,7 +77,7 @@ void LoadMapData(Gamestate *gamestate) {
     float mapHeightDivided  = 0;
     float chunkWidthDivided = 0;
     
-    switch(gamestate->optionsData->mapLOD) {
+    switch(options->mapLOD) {
         case 1:
         mapWidthDivided   = (float)mapWidth  * 0.20f;
         mapHeightDivided  = (float)mapHeight * 0.20f;
@@ -111,18 +108,15 @@ void LoadMapData(Gamestate *gamestate) {
     
     // Generating chunks
     u32 chunkTotal = (mapWidth/250) * (mapHeight/250);
-    gamestate->map.numChunks = chunkTotal;
+    map->numChunks = chunkTotal;
     
-    gamestate->map.chunks = (Chunk*)calloc(chunkTotal, sizeof(Chunk));
-    if(gamestate->map.chunks == 0) {
-        DB_Errorlog(gamestate, "(F): Failed to allocated memory for chunks.\n");
-        DB_CrashError(gamestate);
-    }
+    map->chunks = (Chunk*)calloc(chunkTotal, sizeof(Chunk));
+    if(map->chunks == 0) DB_CrashError("(F): Failed to allocated memory for chunks.\n");
     
     for(int i = 0; i < chunkTotal; i++) {
-        if(gamestate->optionsData->mapLOD != 0) {
+        if(options->mapLOD != 0) {
             // Location
-            gamestate->map.chunks[i].location = (Vector3){
+            map->chunks[i].location = (Vector3){
                 (float)(i%(mapWidth/250)),
                 0.0f,
                 (float)(i/(mapWidth/250))};
@@ -137,64 +131,66 @@ void LoadMapData(Gamestate *gamestate) {
                           (int)chunkWidthDivided+1, (int)chunkWidthDivided+1});
             
             // Mesh and Model
-            gamestate->map.chunks[i].mesh  = GenMeshHeightmap(croppedHeightmap, (Vector3){
-                                                                  1.0f+(1.0f/chunkWidthDivided),
-                                                                  0.2f,
-                                                                  1.0f+(1.0f/chunkWidthDivided)});
-            gamestate->map.chunks[i].model = LoadModelFromMesh(gamestate->map.chunks[i].mesh);
+            map->chunks[i].mesh  = GenMeshHeightmap(croppedHeightmap, (Vector3){
+                                                        1.0f+(1.0f/chunkWidthDivided),
+                                                        0.2f,
+                                                        1.0f+(1.0f/chunkWidthDivided)});
+            map->chunks[i].model = LoadModelFromMesh(map->chunks[i].mesh);
             
             // Unload
             UnloadImage(croppedHeightmap);
         } else {
             // Location
-            gamestate->map.chunks[i].location = (Vector3){
+            map->chunks[i].location = (Vector3){
                 (float)(i%(mapWidth/250))+0.5f,
                 0.0f,
                 (float)(i/(mapWidth/250))+0.5f};
             
             // Generate planes
-            gamestate->map.chunks[i].mesh  = GenMeshPlane(1.0f, 1.0f, 1, 1);
-            gamestate->map.chunks[i].model = LoadModelFromMesh(gamestate->map.chunks[i].mesh);
+            map->chunks[i].mesh  = GenMeshPlane(1.0f, 1.0f, 1, 1);
+            map->chunks[i].model = LoadModelFromMesh(map->chunks[i].mesh);
         }
         
         // Texture
-        Image textureImg = ImageCopy(gamestate->map.provincesImg);
+        Image textureImg = ImageCopy(map->provincesImg);
         ImageCrop(&textureImg, (Rectangle){
                       (int)(i*250)%mapWidth,
                       (int)((i*250)/mapWidth)*250,
                       250, 250});
-        gamestate->map.chunks[i].texture = LoadTextureFromImage(textureImg);
-        gamestate->map.chunks[i].model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = gamestate->map.chunks[i].texture;
+        map->chunks[i].texture = LoadTextureFromImage(textureImg);
+        map->chunks[i].model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = map->chunks[i].texture;
         
         // Unload
         UnloadImage(textureImg);
     }
     UnloadImage(heightmap);
     
-    DB_Errorlog(gamestate, "(S): Generated map.\n");
+    DB_Errorlog("(S): Generated map.\n");
 }
 
 // Frees the map
-void FreeMap(Gamestate *gamestate) {
-    if(gamestate->map.chunks == 0) {
-        DB_Errorlog(gamestate, "(S): No chunks to free.\n");
+//     Uses:
+//   - Map
+void FreeMap(void) {
+    if(map->chunks == 0) {
+        DB_Errorlog("(S): No chunks to free.\n");
         return;
     }
     
     // Free data in chunks
-    for(int i = 0; i < gamestate->map.numChunks; i++) {
-        UnloadModel(gamestate->map.chunks[i].model);
-        UnloadTexture(gamestate->map.chunks[i].texture);
+    for(int i = 0; i < map->numChunks; i++) {
+        UnloadModel(map->chunks[i].model);
+        UnloadTexture(map->chunks[i].texture);
     }
     
     // Free chunks
-    free(gamestate->map.chunks);
-    gamestate->map.chunks = 0;
-    gamestate->map.numChunks = 0;
+    free(map->chunks);
+    map->chunks = 0;
+    map->numChunks = 0;
     
     // Free images
-    UnloadImage(gamestate->map.provincesImg);
-    UnloadImage(gamestate->map.terrainImg);
+    UnloadImage(map->provincesImg);
+    UnloadImage(map->terrainImg);
     
-    DB_Errorlog(gamestate, "(S): Freed Chunks.\n");
+    DB_Errorlog("(S): Freed Chunks.\n");
 }

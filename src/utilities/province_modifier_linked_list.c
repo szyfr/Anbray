@@ -17,15 +17,14 @@ ProvinceModifierMember *CreateProvinceModifierMember(void) {
 //  Print province modifier info
 //     Uses:
 //   - NONE
-// NOTE: gamestate
-void ReadProvinceModifierMembers(Gamestate *gamestate, ProvinceModifierList *list) {
+void ReadProvinceModifierMembers(ProvinceModifierList *list) {
     // Test list
     if(list == 0) {
-        DB_Errorlog(gamestate, "(F): Attempted to print from an null pointer.\n");
+        DB_Errorlog("(F): Attempted to print from an null pointer.\n");
         return;
     }
     if(list->first == 0) {
-        DB_Errorlog(gamestate, "(F): Attempted to print from an empty province modifier list.\n");
+        DB_Errorlog("(F): Attempted to print from an empty province modifier list.\n");
         return;
     }
     
@@ -34,7 +33,7 @@ void ReadProvinceModifierMembers(Gamestate *gamestate, ProvinceModifierList *lis
     
     // Iterate through each member and print info
     sprintf(buffer, "\n---\nTotal count: %i\n---\n", list->count);
-    DB_Errorlog(gamestate, buffer);
+    DB_Errorlog(buffer);
     
     
     ProvinceModifierMember *mem = list->first;
@@ -44,9 +43,9 @@ void ReadProvinceModifierMembers(Gamestate *gamestate, ProvinceModifierList *lis
         // TODO: Change to show words instead of numbers
         mem = mem->next;
         
-        DB_Errorlog(gamestate, buffer);
+        DB_Errorlog(buffer);
     }
-    DB_Errorlog(gamestate, "---\n\n");
+    DB_Errorlog("---\n\n");
 }
 
 

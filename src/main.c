@@ -21,67 +21,23 @@
 /// Includes <Game>
 #include "../include/structures.h"
 #include "../include/prototypes.h"
-//#include "../include/globals.h"
+#include "../include/globals.h"
 #include "../include/includes.h"
 
 
 /// Main
 int main() {
-    SetTraceLogLevel(LOG_NONE);
-    InitWindow(1280, 720, "Anbray");
-    SetTargetFPS(60);
-    SetExitKey(KEY_END);
-    
-    Gamestate *gamestate = (Gamestate*)calloc(1, sizeof(Gamestate));
-    
-    InitOptions(gamestate);
-    DB_InitializeErrorlog(gamestate);
-    
-    InitializePlayer(gamestate);
-    LoadLocalization(gamestate, 0);
-    
-    
-    //*
-    // TESTING
-    PopulationList *list = CreatePopulationList();
-    
-    PopulationMember *mem = CreatePopulationMember();
-    mem->population = 1000;
-    mem->race       = 0;
-    mem->culture    = 0;
-    mem->religion   = 0;
-    AddToPopulationList(list, mem);
-    
-    mem = CreatePopulationMember();
-    mem->population = 200;
-    mem->race       = 0;
-    mem->culture    = 0;
-    mem->religion   = 0;
-    AddToPopulationList(list, mem);
-    
-    mem = CreatePopulationMember();
-    mem->population = 1200;
-    mem->race       = 0;
-    mem->culture    = 1;
-    mem->religion   = 0;
-    AddToPopulationList(list, mem);
-    
-    ReadPopulationMembers(gamestate, list);
-    
-    DeletePopulationList(list);
-    list = 0;
-    ReadPopulationMembers(gamestate, list);
-    //*/
+    InitializeGameData();
     
     
     while(!WindowShouldClose()) {
         // Logic
         if(gamestate->state == STATE_MAP) {
-            PlayerControls(gamestate);
+            PlayerControls();
         }
         if(IsKeyPressed(KEY_ESCAPE)) {
-            if(gamestate->pmFlags & (1 << 0)) gamestate->pmFlags &= ~(1 << 0);
-            else                              gamestate->pmFlags |=  (1 << 0);
+            if(gui->pmFlags & (1 << 0)) gui->pmFlags &= ~(1 << 0);
+            else                        gui->pmFlags |=  (1 << 0);
         }
         
         
@@ -90,12 +46,12 @@ int main() {
         ClearBackground(RAYWHITE);
         
         // Draw 3D
-        BeginMode3D(gamestate->camera);
+        BeginMode3D(player->camera);
         
         if(gamestate->state == STATE_MAP) {
-            if(gamestate->optionsData->messageLogging) DrawGrid(100,1);
+            if(options->messageLogging) DrawGrid(100,1);
             
-            DrawMap(gamestate);
+            DrawMap();
             
             
         }
@@ -104,36 +60,32 @@ int main() {
         
         
         // Draw 2D
-        DrawMainMenu(gamestate);
+        DrawMainMenu();
         
         // Draw Pause Menu
-        DrawPauseMenu(gamestate);
+        DrawPauseMenu();
         
         // Options menu
-        DrawOptionsMenu(gamestate);
+        DrawOptionsMenu();
         
         
         
         // Draw Debug
-        if(gamestate->optionsData->messageLogging) {
+        if(options->messageLogging) {
             DrawFPS(0,0);
             char buffer[20] = {0};
             sprintf(buffer, "%2.f,%2.f,%2.f\n %2.f\n",
-                    gamestate-> camera.target.x,
-                    gamestate->camera.target.y,
-                    gamestate->camera.target.z,
-                    gamestate->camera.fovy);
-            if(gamestate->state == STATE_MAP) {
-                sprintf(buffer, "%s\n",
-                        gamestate->mapLocalization[0]);
-            }
+                    player->camera.target.x,
+                    player->camera.target.y,
+                    player->camera.target.z,
+                    player->camera.fovy);
             DrawText(buffer, 0, 20, 20, BLACK);
         }
         
         EndDrawing();
     }
     
-    QuitGame(gamestate);
+    QuitGame();
     
     return 0;
 }

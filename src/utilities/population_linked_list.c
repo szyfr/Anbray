@@ -16,16 +16,15 @@ PopulationMember *CreatePopulationMember(void) {
 
 //  Print population info
 //     Uses:
-//   - NONE
-// NOTE: gamestate
-void ReadPopulationMembers(Gamestate *gamestate, PopulationList *list) {
+//   - 
+void ReadPopulationMembers(PopulationList *list) {
     // Test list
     if(list == 0) {
-        DB_Errorlog(gamestate, "(F): Attempted to print from an null pointer.\n");
+        DB_Errorlog("(F): Attempted to print from an null pointer.\n");
         return;
     }
     if(list->first == 0) {
-        DB_Errorlog(gamestate, "(F): Attempted to print from an empty population list.\n");
+        DB_Errorlog("(F): Attempted to print from an empty population list.\n");
         return;
     }
     
@@ -34,7 +33,7 @@ void ReadPopulationMembers(Gamestate *gamestate, PopulationList *list) {
     
     // Iterate through each member and print info
     sprintf(buffer, "\n---\nTotal count: %i\n---\n", list->count);
-    DB_Errorlog(gamestate, buffer);
+    DB_Errorlog(buffer);
     
     
     PopulationMember *mem = list->first;
@@ -44,9 +43,9 @@ void ReadPopulationMembers(Gamestate *gamestate, PopulationList *list) {
         // TODO: Change to show words instead of numbers
         mem = mem->next;
         
-        DB_Errorlog(gamestate, buffer);
+        DB_Errorlog(buffer);
     }
-    DB_Errorlog(gamestate, "---\n\n");
+    DB_Errorlog("---\n\n");
 }
 
 

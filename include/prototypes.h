@@ -7,64 +7,45 @@
 
 /// Prototypes
 // Debug
-void DB_Errorlog(Gamestate *gamestate, char *message);
-void DB_InitializeErrorlog(Gamestate *gamestate);
-void DB_SaveErrorlog(Gamestate *gamestate);
-void DB_CrashError(Gamestate *gamestate);
+void DB_Errorlog(char *message);
+void DB_InitializeErrorlog(void);
+void DB_SaveErrorlog(void);
+void DB_CrashError(char *message);
 
 // Localization
-char *GetRawCoreLocalization(Gamestate *gamestate, u32 *rawRead);
-char *GetRawMapLocalization(Gamestate *gamestate, char *mapname, u32 *rawRead);
+char *GetRawCoreLocalization(u32 *rawRead);
+char *GetRawMapLocalization(char *mapname, u32 *rawRead);
 
 char *GrabMapName(char *file);
 
-void LoadLocalization(Gamestate *gamestate, char *mapname);
-void FreeLocalization(Gamestate *gamestate, bool core);
+void LoadLocalization(char *mapname);
+void FreeLocalization(bool core);
 
 // Options
-void CommitOptionsData(Gamestate *gamestate);
-void InitOptions(Gamestate *gamestate);
+void CommitOptionsData(void);
+void InitializeOptions(void);
 
 // Lists
-/*
-PopulationList *CreatePopulationList();
-void AddToPopulationList(PopulationList *popList, PopulationMember *mem);
-void AddNewToPopulationList(PopulationList *popList, u32 number, u8 race, u8 culture);
-void RemoveFromPopulationList(PopulationList *popList, PopulationMember *mem);
-void DeletePopulationList(PopulationList *popList);
-void SwitchPopulationList(PopulationList *destPopList, PopulationList *srcPopList, PopulationMember *mem);
-
-ProvinceList *CreateProvinceList();
-void AddToProvinceList(ProvinceList *provList, ProvinceMember *mem);
-void RemoveFromProvinceList(ProvinceList *provList, ProvinceMember *mem);
-void DeleteProvinceList(ProvinceList *provList);
-void SwitchProvinceList(ProvinceList *destProvList, ProvinceList *srcProvList, ProvinceMember *mem);
-
-ProvinceModifierList *CreateProvinceModifierList();
-void AddToProvinceModifierList(ProvinceModifierList *provModList, ProvinceModifierMember *mem);
-void RemoveFromProvinceModifierList(ProvinceModifierList *provModList, ProvinceModifierMember *mem);
-void DeleteProvinceModifierList(ProvinceModifierList *provModList);
-void SwitchProvinceModifierList(ProvinceModifierList *destProvModList, ProvinceModifierList *srcProvModList, ProvinceModifierMember *mem);
-//*/
+// TODO: off-stream create prototypes
 
 // Exit
-void QuitGame(Gamestate *gamestate);
+void QuitGame(void);
 
 // Player
-void InitializePlayer(Gamestate *gamestate);
-void PlayerControls(Gamestate *gamestate);
+void InitializePlayer(void);
+void PlayerControls(void);
 
 // Map
-void LoadMapData(Gamestate *gamestate);
-void FreeMap(Gamestate *gamestate);
+void LoadMapData(void);
+void FreeMap(void);
 
-void DrawSingleChunk(Gamestate *gamestate, u32 chunk, float xOffset);
-void DrawChunks(Gamestate *gamestate, bool lessThan, float range, float xOffset);
-void DrawMap(Gamestate *gamestate);
+void DrawSingleChunk(u32 chunk, float xOffset);
+void DrawChunks(bool lessThan, float range, float xOffset);
+void DrawMap(void);
 
 // GUI
-void DrawMainMenu(Gamestate *gamestate);
+void DrawMainMenu(void);
 
-void DrawOptionsMenu(Gamestate *gamestate);
+void DrawOptionsMenu(void);
 
-void DrawPauseMenu(Gamestate *gamestate);
+void DrawPauseMenu(void);

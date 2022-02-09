@@ -15,29 +15,36 @@ typedef enum {
 /// Structures
 typedef struct {
     State state;
-    char *errorlog;
-    u32   errorlogSize;
-    
+} Gamestate;
+
+typedef struct {
     // Main menu GUI
     u8    mmFlags;
     
     // Options
-    OptionsData *optionsData;
-    u8           omFlags;
-    u32          resolutionActive;
-    bool         fullscreenCheck;
-    u32          languageActive;
-    float        LOD;
-    bool         messageCheck;
+    u8    omFlags;
+    u32   resolutionActive;
+    bool  fullscreenCheck;
+    u32   languageActive;
+    float LOD;
+    bool  messageCheck;
     
     // Map
-    u16      pmFlags;
+    u16   pmFlags;
+} GUI;
+
+typedef struct {
     Camera3D camera;
-    Map      map;
-    
-    // Localization
+} Player;
+
+typedef struct {
     char **coreLocalization;
     u16 coreLength;
     char **mapLocalization;
     u16 mapLength;
-} Gamestate;
+} Localization;
+
+typedef struct {
+    char *errorlog;
+    u32   errorlogSize;
+} DebugLogger;

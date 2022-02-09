@@ -8,10 +8,10 @@
 /// Include
 #include "generic_defines.h"
 
-#include "map.h"
-#include "population.h"
-#include "province_modifiers.h"
-#include "province.h"
-#include "options.h"
+#include "core/map.h"
+#include "core/population.h"
+#include "core/province_modifiers.h"
+#include "core/province.h"
+#include "core/options.h"
 
-#include "gamestate.h"
+#include "core/gamestate.h"
