@@ -29,7 +29,6 @@
 int main() {
     InitializeGameData();
     
-    
     while(!WindowShouldClose()) {
         // Logic
         if(gamestate->state == STATE_MAP) {
@@ -43,6 +42,7 @@ int main() {
         
         // Draw
         BeginDrawing();
+        
         ClearBackground(RAYWHITE);
         
         // Draw 3D

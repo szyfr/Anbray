@@ -19,6 +19,7 @@
 #include "../src/core/map_generation.c"
 #include "../src/core/options.c"
 #include "../src/core/player.c"
+#include "../src/core/province_loading.c"
 
 #include "../src/gui/mainmenu_gui.c"
 #include "../src/gui/optionsmenu_gui.c"

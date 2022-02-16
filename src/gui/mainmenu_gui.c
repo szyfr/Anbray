@@ -40,6 +40,8 @@ void DrawMainMenu(void) {
                     if(!gui->omFlags & (1 << 0)) {
                         LoadLocalization(directoryList[i+2]);
                         LoadMapData();
+                        LoadProvinceData();
+                        //ReadProvinceMembers(map->provinces);
                         gamestate->state = STATE_MAP;
                     }
                 }

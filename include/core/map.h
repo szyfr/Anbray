@@ -20,4 +20,6 @@ typedef struct {
     
     u32 numChunks;
     Chunk *chunks;
+    
+    ProvinceList *provinces;
 } Map;

@@ -6,24 +6,38 @@
 
 
 /// Defines
-#define TYPE_DEFAULT      0
-#define TYPE_WATER        1
-#define TYPE_CONTROLLABLE 2
-#define TYPE_IMPASSABLE   3
+
+
+/// Enums
+typedef enum {
+    plains = 1,
+    swamp,
+    dwarf_tunnel,
+    dwarf_hold,
+    cave,
+} Terrain;
+
+typedef enum {
+    base,
+    water,
+    controllable,
+    impassable
+} ProvinceType;
+
 
 /// Structs
 typedef struct {
-    u16 localID;
-    // TODO: Define as enums
-    u8  terrain;
-    u8  type;
+    u32          localizationID;
+    Color        color;
+    Terrain      terrain;
+    ProvinceType type;
     
     s16 maximumInfrastruture;
     s16 currentInfrastruture;
     
     PopulationList *population;
     
-    u8 buildings[6];
+    u8 buildings[8];
     
     ProvinceModifierList *modifiers;
 } Province;

@@ -34,7 +34,8 @@ typedef struct {
 } GUI;
 
 typedef struct {
-    Camera3D camera;
+    Camera3D  camera;
+    Province *selectedProvince;
 } Player;
 
 typedef struct {

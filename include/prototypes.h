@@ -43,6 +43,9 @@ void DrawSingleChunk(u32 chunk, float xOffset);
 void DrawChunks(bool lessThan, float range, float xOffset);
 void DrawMap(void);
 
+Color U32ToColor(u32 input);
+u32   ColorToU32(Color input);
+
 // GUI
 void DrawMainMenu(void);
 

@@ -12,7 +12,30 @@
 //   - NONE
 ProvinceMember *CreateProvinceMember(void) {
     ProvinceMember *mem = (ProvinceMember*)calloc(1, sizeof(ProvinceMember));
-    mem->province      = (Province*)calloc(1, sizeof(Province));
+    mem->province       = (Province*)calloc(1, sizeof(Province));
+    
+    return mem;
+}
+
+//  Loads province member
+//     Uses:
+//   - NONE
+// TODO: Create longer function that does this for every member in file
+ProvinceMember *LoadProvinceMember(Province *data) {
+    ProvinceMember *mem = CreateProvinceMember();
+    
+    mem->province->localizationID       = data->localizationID;
+    mem->province->color                = data->color;
+    mem->province->terrain              = data->terrain;
+    mem->province->type                 = data->type;
+    mem->province->maximumInfrastruture = data->maximumInfrastruture;
+    mem->province->currentInfrastruture = data->currentInfrastruture;
+    mem->province->buildings[0]         = data->buildings[0];
+    mem->province->buildings[1]         = data->buildings[1];
+    mem->province->buildings[2]         = data->buildings[2];
+    mem->province->buildings[3]         = data->buildings[3];
+    mem->province->buildings[4]         = data->buildings[4];
+    mem->province->buildings[5]         = data->buildings[5];
     
     return mem;
 }
@@ -41,14 +64,36 @@ void ReadProvinceMembers(ProvinceList *list) {
     
     ProvinceMember *mem = list->first;
     for(int i = 0; i < list->count; i++) {
-        sprintf(buffer, "MEMBER: %i:%p\nID:\t\t%i\n\nTerrain:\t%i\nType:\t\t%i\nInfrastruture:\t%i/%i\n",
-                i, mem, mem->province->localID, mem->province->terrain, mem->province->type, mem->province->currentInfrastruture, mem->province->maximumInfrastruture);
+        sprintf(buffer, "MEMBER: %i:%p\nID:\t\t%i\nCol:\t\t%i,%i,%i,%i\n\nTerrain:\t%i\nType:\t\t%i\nInfrastruture:\t%i/%i\n",
+                i, mem, mem->province->localizationID,
+                mem->province->color.r, mem->province->color.g,
+                mem->province->color.b, mem->province->color.a,
+                mem->province->terrain, mem->province->type, mem->province->currentInfrastruture, mem->province->maximumInfrastruture);
         // TODO: Change to show words instead of numbers
         mem = mem->next;
         
         DB_Errorlog(buffer);
     }
     DB_Errorlog("---\n\n");
+}
+
+//  Grabs the contents of member
+//     Uses:
+//   - NONE
+Province *GrabProvinceMember(ProvinceList *list, u32 index) {
+    Province *output;
+    
+    ProvinceMember *current = list->first;
+    for(int i = 0; i < index; i++) {
+        if(current->next == 0) {
+            DB_Errorlog("(F): Index of member was too high.\n");
+            return 0;
+        }
+        
+        current = current->next;
+    }
+    
+    return current->province;
 }
 
 

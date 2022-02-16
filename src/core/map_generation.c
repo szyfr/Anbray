@@ -177,6 +177,9 @@ void FreeMap(void) {
         return;
     }
     
+    // Delete province list
+    DeleteProvinceList(map->provinces);
+    
     // Free data in chunks
     for(int i = 0; i < map->numChunks; i++) {
         UnloadModel(map->chunks[i].model);
