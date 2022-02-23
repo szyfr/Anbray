@@ -18,9 +18,9 @@ typedef enum {
 } Terrain;
 
 typedef enum {
-    base,
-    water,
+    base = 1,
     controllable,
+    water,
     impassable
 } ProvinceType;
 

@@ -26,7 +26,7 @@ const float cameraZMaximumOff  =  0.25f;
 void InitializePlayer(void) {
     // Initializing Camera
     player->camera.target   = (Vector3){startingX, 0.0f,            startingZ};
-    player->camera.position = (Vector3){startingX, positionYOffset, startingZ + positionZOffset};
+    player->camera.position = (Vector3){startingX, positionYOffset, startingZ+positionZOffset};
     player->camera.up       = (Vector3){0.0f,1.0f,0.0f};
     player->camera.fovy     = 20.0f;
     
@@ -91,7 +91,6 @@ void PlayerControls(void) {
             
             if(col.hit) break;
         }
-        //printf("Collision:\nHit: %i\nDist: %i\nPoint: %f,%f,%f\n", col.hit, col.distance, col.point.x, col.point.y, col.point.z);
         if(col.hit) {
             float chunkWidth  = map->provincesImg.width/250;
             float chunkHeight = map->provincesImg.height/250;

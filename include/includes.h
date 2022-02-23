@@ -24,3 +24,4 @@
 #include "../src/gui/mainmenu_gui.c"
 #include "../src/gui/optionsmenu_gui.c"
 #include "../src/gui/pausemenu_gui.c"
+#include "../src/gui/provincemenu_gui.c"

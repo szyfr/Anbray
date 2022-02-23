@@ -32,6 +32,10 @@ void LoadMapData(void) {
     }
     map->provincesImg = LoadImage(provincesLoc);
     
+    // Pre-calc
+    map->chunkWidth = map->provincesImg.width / 250;
+    map->edge       = map->chunkWidth - 3;
+    
     // Grab Terrain map
     char terrainLoc[200] = {0};
     strcpy(terrainLoc, directory);

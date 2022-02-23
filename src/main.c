@@ -58,6 +58,7 @@ int main() {
         
         EndMode3D();
         
+        DrawProvinceMenu();
         
         // Draw 2D
         DrawMainMenu();

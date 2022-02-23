@@ -22,4 +22,8 @@ typedef struct {
     Chunk *chunks;
     
     ProvinceList *provinces;
+    
+    // Pre-calculated variables
+    u32   chunkWidth;
+    float edge;
 } Map;

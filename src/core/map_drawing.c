@@ -52,10 +52,7 @@ void DrawChunks(bool lessThan, float range, float xOffset) {
 //     Uses:
 //   - Map
 void DrawMap(void) {
-    u32 chunkWidth  = map->provincesImg.width / 250;
-    float rightEdge = chunkWidth - 3;
-    
-    DrawChunks(false, rightEdge, -rightEdge-3);
+    DrawChunks(false, map->edge, -map->edge-3);
     DrawChunks(false, 0.0f,       0.0f);
-    DrawChunks(true,  2.0f,       chunkWidth);
+    DrawChunks(true,  2.0f,       map->chunkWidth);
 }
