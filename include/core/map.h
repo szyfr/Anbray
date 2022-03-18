@@ -1,11 +1,18 @@
-///=-------------------=///
-//    @Author: Szyfr     //
-//    @Date: 21/12/30    //
-///=-------------------=///
+///=--------------------=///
+//   @Author:  Szyfr      //
+//   @Created: 21/12/30   //
+//   @Edited:  22/03/17   //
+///=--------------------=///
 
 
 
 /// Structures
+typedef struct {
+    u32 x;
+    u32 y;
+    u32 z;
+} IVector3;
+
 typedef struct {
     Vector3 location;
     

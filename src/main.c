@@ -1,12 +1,14 @@
-///=-------------------=///
-//    @Author: Szyfr     //
-//    @Date: 21/12/30    //
-///=-------------------=///
+///=--------------------=///
+//   @Author:  Szyfr      //
+//   @Created: 21/12/30   //
+//   @Edited:  22/03/17   //
+///=--------------------=///
 
 
 
 /// Includes <System>
 #define RAYGUI_IMPLEMENTATION
+
 
 #include <stdint.h>
 #include <stdio.h>
@@ -20,9 +22,20 @@
 
 /// Includes <Game>
 #include "../include/structures.h"
-#include "../include/prototypes.h"
+#include "../include/include_struct.h"
+
+static IVector3 *test;
+static Vector3   center;
+static u32       testCount;
+const  float testFloat = 250.0f;
+
+#include "../include/constants.h"
 #include "../include/globals.h"
-#include "../include/includes.h"
+
+#include "../include/prototypes.h"
+#include "../include/include_func.h"
+
+
 
 
 /// Main
@@ -39,6 +52,14 @@ int main() {
             else                        gui->pmFlags |=  (1 << 0);
         }
         
+        // mapmodes
+        if(IsKeyPressed(KEY_Q)) ChangeMapmode(surface);
+        if(IsKeyPressed(KEY_W)) ChangeMapmode(terrain);
+        if(IsKeyPressed(KEY_E)) ChangeMapmode(nation);
+        if(IsKeyPressed(KEY_R)) ChangeMapmode(race);
+        if(IsKeyPressed(KEY_T)) ChangeMapmode(culture);
+        if(IsKeyPressed(KEY_Y)) ChangeMapmode(religion);
+        
         
         // Draw
         BeginDrawing();
@@ -54,6 +75,29 @@ int main() {
             DrawMap();
             
             
+        }
+        
+        for(int i = 0; i < testCount; i++) {
+            if(i != testCount-1) DrawLine3D(
+                                            (Vector3){
+                                                ((float)test[i].x+0.5f)/testFloat,
+                                                ((float)test[i].y+0.5f)/12,
+                                                ((float)test[i].z+0.5f)/testFloat},
+                                            (Vector3){
+                                                ((float)test[i+1].x+0.5f)/testFloat,
+                                                ((float)test[i+1].y+0.5f)/12,
+                                                ((float)test[i+1].z+0.5f)/testFloat},
+                                            BLACK);
+            else DrawLine3D(
+                            (Vector3){
+                                ((float)test[i].x+0.5f)/testFloat,
+                                ((float)test[i].y+0.5f)/12,
+                                ((float)test[i].z+0.5f)/testFloat},
+                            (Vector3){
+                                ((float)test[0].x+0.5f)/testFloat,
+                                ((float)test[0].y+0.5f)/12,
+                                ((float)test[0].z+0.5f)/testFloat},
+                            BLACK);
         }
         
         EndMode3D();

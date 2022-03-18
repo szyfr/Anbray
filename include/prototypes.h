@@ -1,7 +1,8 @@
-///=-------------------=///
-//    @Author: Szyfr     //
-//    @Date: 22/01/26    //
-///=-------------------=///
+///=--------------------=///
+//   @Author:  Szyfr      //
+//   @Created: 22/01/26   //
+//   @Edited:  22/03/17   //
+///=--------------------=///
 
 
 
@@ -26,7 +27,29 @@ void CommitOptionsData(void);
 void InitializeOptions(void);
 
 // Lists
-// TODO: off-stream create prototypes
+// Population
+PopulationList   *CreatePopulationList(void);
+PopulationMember *CreatePopulationMember(void);
+void ReadPopulationMembers(PopulationList *list);
+bool AddToPopulationList(PopulationList *provList, PopulationMember *mem);
+bool RemoveFromPopulationList(PopulationList *list, PopulationMember *mem);
+bool DeletePopulationList(PopulationList *list);
+// Province
+ProvinceList   *CreateProvinceList(void);
+ProvinceMember *CreateProvinceMember(void);
+ProvinceMember *LoadProvinceMember(Province *data);
+Province       *GrabProvinceMember(ProvinceList *list, u32 index);
+void ReadProvinceMembers(ProvinceList *list);
+bool AddToProvinceList(ProvinceList *provList, ProvinceMember *mem);
+bool RemoveFromProvinceList(ProvinceList *list, ProvinceMember *mem);
+bool DeleteProvinceList(ProvinceList *list);
+// Province Modifier
+ProvinceModifierList   *CreateProvinceModifierList(void);
+ProvinceModifierMember *CreateProvinceModifierMember(void);
+void ReadProvinceModifierMembers(ProvinceModifierList *list);
+bool AddToProvinceModifierList(ProvinceModifierList *provList, ProvinceModifierMember *mem);
+bool RemoveFromProvinceModifierList(ProvinceModifierList *list, ProvinceModifierMember *mem);
+bool DeleteProvinceModifierList(ProvinceModifierList *list);
 
 // Exit
 void QuitGame(void);
@@ -36,6 +59,11 @@ void InitializePlayer(void);
 void PlayerControls(void);
 
 // Map
+void CropImageToChunk(Image image, u32 posX, u32 posY, Chunk *chunk);
+void CalculateBorder(void);
+bool CheckPixel(Image provinceMap, Color color, int x, int y);
+IVector3 *SortPoints(IVector3 *array, u32 size);
+
 void LoadMapData(void);
 void FreeMap(void);
 

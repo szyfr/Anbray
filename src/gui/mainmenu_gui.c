@@ -1,11 +1,10 @@
-///=-------------------=///
-//    @Author: Szyfr     //
-//    @Date: 21/12/30    //
-///=-------------------=///
+///=--------------------=///
+//   @Author:  Szyfr      //
+//   @Created: 21/12/30   //
+//   @Edited:  22/03/17   //
+///=--------------------=///
 
 
-
-/// Functions
 
 // Draws the gui elements of the main menu and tracks the flags
 //     Uses:

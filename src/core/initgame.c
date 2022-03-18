@@ -1,7 +1,8 @@
-///=-------------------=///
-//    @Author: Szyfr     //
-//    @Date: 22/02/09    //
-///=-------------------=///
+///=--------------------=///
+//   @Author:  Szyfr      //
+//   @Created: 22/02/09   //
+//   @Edited:  22/03/17   //
+///=--------------------=///
 
 
 
@@ -12,10 +13,10 @@
 //   - All
 void InitializeGameData(void) {
     // Init Raylib
-    SetTraceLogLevel(LOG_NONE);
-    InitWindow(1280, 720, "Anbray");
-    SetTargetFPS(60);
-    SetExitKey(KEY_END);
+    SetTraceLogLevel(LOG_NONE);       // Disables Raylib Logging
+    InitWindow(1280, 720, "Anbray");  // Inits window
+    SetTargetFPS(60);                 // Sets atrget FPS to 60
+    SetExitKey(KEY_END);              // Sets exit key to END
     
     // Init global structures
     gamestate    = (Gamestate*)calloc(1, sizeof(Gamestate));

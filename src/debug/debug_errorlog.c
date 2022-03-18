@@ -1,11 +1,10 @@
-///=-------------------=///
-//    @Author: Szyfr     //
-//    @Date: 22/01/19    //
-///=-------------------=///
+///=--------------------=///
+//   @Author:  Szyfr      //
+//   @Created: 22/01/19   //
+//   @Edited:  22/03/17   //
+///=--------------------=///
 
 
-
-/// Functions
 
 // Logging errors/messages
 //     Uses:
@@ -34,36 +33,5 @@ void DB_Errorlog(char *message) {
         }
         
         strcat(debugLogger->errorlog, message);
-    }
-}
-
-// Initialize message log
-//     Uses:
-//   - DebugLogger
-void DB_InitializeErrorlog(void) {
-    debugLogger->errorlogSize = 1000;
-    debugLogger->errorlog = (char*)calloc(debugLogger->errorlogSize, sizeof(char));
-}
-
-// Save message log to file and free
-//     Uses:
-//   - DebugLogger
-void DB_SaveErrorlog(void) {
-    SaveFileText("log.txt", debugLogger->errorlog);
-    free(debugLogger->errorlog);
-}
-
-// Save message log and exit game
-//     Uses:
-//   - Options
-//   - DebugLogger
-void DB_CrashError(char *message) {
-    DB_Errorlog(message);
-    if(options->messageLogging) {
-        SaveFileText("log.txt", debugLogger->errorlog);
-        free(debugLogger->errorlog);
-        
-        EndDrawing();
-        exit(1);
     }
 }

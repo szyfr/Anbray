@@ -16,7 +16,7 @@ PopulationMember *CreatePopulationMember(void) {
 
 //  Print population info
 //     Uses:
-//   - 
+//   - NONE
 void ReadPopulationMembers(PopulationList *list) {
     // Test list
     if(list == 0) {

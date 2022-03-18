@@ -1,19 +1,13 @@
 ///=--------------------=///
 //   @Author:  Szyfr      //
-//   @Created: 21/12/30   //
+//   @Created: 22/03/09   //
 //   @Edited:  22/03/17   //
 ///=--------------------=///
 
 
 
-/// Enums
-typedef enum {
-    STATE_MAINMENU = 0,
-    STATE_MAP
-} State;
-
-
 /// Structures
 typedef struct {
-    State state;
-} Gamestate;
+    char *errorlog;
+    u32   errorlogSize;
+} DebugLogger;

@@ -5,15 +5,17 @@
 
 
 
-///
-enum Languages {
+/// Enum
+typedef enum {
     english = 0,
     french,
     italian,
     german,
     spanish,
-};
+} Languages;
 
+
+/// Structures
 typedef struct {
     u32  resolutionWidth;
     u32  resolutionHeight;

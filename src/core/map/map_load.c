@@ -1,11 +1,10 @@
-///=-------------------=///
-//    @Author: Szyfr     //
-//    @Date: 21/12/30    //
-///=-------------------=///
+///=--------------------=///
+//   @Author:  Szyfr      //
+//   @Created: 21/12/30   //
+//   @Edited:  22/03/12   //
+///=--------------------=///
 
 
-
-/// Functions
 
 // Generates the map
 //     Uses:
@@ -155,49 +154,14 @@ void LoadMapData(void) {
             map->chunks[i].model = LoadModelFromMesh(map->chunks[i].mesh);
         }
         
-        // Texture
-        Image textureImg = ImageCopy(map->provincesImg);
-        ImageCrop(&textureImg, (Rectangle){
-                      (int)(i*250)%mapWidth,
-                      (int)((i*250)/mapWidth)*250,
-                      250, 250});
-        map->chunks[i].texture = LoadTextureFromImage(textureImg);
-        map->chunks[i].model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = map->chunks[i].texture;
-        
-        // Unload
-        UnloadImage(textureImg);
+        CropImageToChunk(map->provincesImg,
+                         (int)(i*250)%mapWidth,
+                         (int)((i*250)/mapWidth)*250,
+                         &map->chunks[i]);
     }
     UnloadImage(heightmap);
     
+    CalculateBorder();
+    
     DB_Errorlog("(S): Generated map.\n");
-}
-
-// Frees the map
-//     Uses:
-//   - Map
-void FreeMap(void) {
-    if(map->chunks == 0) {
-        DB_Errorlog("(S): No chunks to free.\n");
-        return;
-    }
-    
-    // Delete province list
-    DeleteProvinceList(map->provinces);
-    
-    // Free data in chunks
-    for(int i = 0; i < map->numChunks; i++) {
-        UnloadModel(map->chunks[i].model);
-        UnloadTexture(map->chunks[i].texture);
-    }
-    
-    // Free chunks
-    free(map->chunks);
-    map->chunks = 0;
-    map->numChunks = 0;
-    
-    // Free images
-    UnloadImage(map->provincesImg);
-    UnloadImage(map->terrainImg);
-    
-    DB_Errorlog("(S): Freed Chunks.\n");
 }

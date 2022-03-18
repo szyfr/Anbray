@@ -1,18 +1,32 @@
-///=-------------------=///
-//    @Author: Szyfr     //
-//    @Date: 22/01/26    //
-///=-------------------=///
+///=--------------------=///
+//   @Author:  Szyfr      //
+//   @Created: 22/01/26   //
+//   @Edited:  22/03/17   //
+///=--------------------=///
 
 
 
-/// Include
-#include "generic_defines.h"
+/// Structures
 
-#include "core/population.h"
-#include "core/province_modifiers.h"
-#include "core/province.h"
+//- Gamestate
+struct Gamestate;
 
-#include "core/map.h"
-#include "core/options.h"
+//- GUI
+struct GUI;
 
-#include "core/gamestate.h"
+//- Localization
+struct Localization;
+
+//- Map
+struct Map;
+struct Chunk;
+struct IVector3;
+
+//- Options
+struct OptionsData;
+
+//- Player
+struct Player;
+
+//- Debug
+struct DebugLogger;

@@ -1,39 +1,10 @@
-///=-------------------=///
-//    @Author: Szyfr     //
-//    @Date: 22/01/05    //
-///=-------------------=///
+///=--------------------=///
+//   @Author:  Szyfr      //
+//   @Created: 22/01/05   //
+//   @Edited:  22/03/17   //
+///=--------------------=///
 
 
-
-/// Constants
-const float mouseWheelModifier =  1.50f;
-const float fovyMinimum        =  4.00f;
-const float fovyMaximum        = 20.00f;
-const float startingX          = 13.25f;
-const float startingZ          =  1.50f;
-const float positionYOffset    =  5.00f;
-const float positionZOffset    =  2.50f;
-
-const float cameraZMinimum     =  0.00f;
-const float cameraZMaximumOff  =  0.25f;
-
-
-/// Functions
-
-// Initialize the player data
-//     Uses:
-//   - Player
-void InitializePlayer(void) {
-    // Initializing Camera
-    player->camera.target   = (Vector3){startingX, 0.0f,            startingZ};
-    player->camera.position = (Vector3){startingX, positionYOffset, startingZ+positionZOffset};
-    player->camera.up       = (Vector3){0.0f,1.0f,0.0f};
-    player->camera.fovy     = 20.0f;
-    
-    DB_Errorlog("(S): Initialized player\n");
-    return;
-    DB_Errorlog("(F): Initialized player\n");
-}
 
 //  Polls controls and moves player
 //     Uses:
